@@ -5,7 +5,11 @@ const cors = require("cors")
 
 app.use(express.json());
 
+// cross origin check
 app.use(cors())
+
+// express use frontend in dist folder
+app.use(express.static("dist"))
 
 // return POST data in logging
 morgan.token("type", function (request, response) {
