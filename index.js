@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 
+app.use(express.json());
+
 let persons = [
     {
         id: "1",
@@ -28,10 +30,12 @@ app.get("/", (request, response) => {
     response.send("<h1>Hello World!</h1>");
 });
 
+// returns all person
 app.get("/api/persons", (request, response) => {
     response.json(persons);
 });
 
+// returns how many persons are in the app
 app.get("/info", (request, response) => {
     const people_amount = persons.length;
     const date = new Date();
@@ -41,6 +45,7 @@ app.get("/info", (request, response) => {
         `);
 });
 
+// return a single person based on id
 app.get("/api/persons/:id", (request, response) => {
     const id = request.params.id;
     const person = persons.find((person) => person.id === id);
@@ -53,11 +58,34 @@ app.get("/api/persons/:id", (request, response) => {
     }
 });
 
+// delete a person based on id
 app.delete("/api/persons/:id", (request, response) => {
     const id = request.params.id;
     persons = persons.filter((person) => person.id !== id);
 
     response.status(204).end();
+});
+
+// post a person into the app
+app.post("/api/persons", (request, response) => {
+    const body = request.body;
+
+    // if no name is provided
+    if (!body.name || !body.number) {
+        return response.status(400).json({
+            error: "name missing",
+        });
+    }
+
+    const person = {
+        id: Math.trunc(Math.random() * 999999999999999),
+        name: body.name,
+        number: body.number,
+    };
+
+    persons = persons.concat(person);
+
+    response.json(person);
 });
 
 const PORT = 3001;
