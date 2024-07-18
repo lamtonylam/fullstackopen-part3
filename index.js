@@ -109,21 +109,21 @@ app.post("/api/persons", (request, response) => {
         });
     }
 
-    if (persons.some((person) => person.name === body.name)) {
-        return response.status(400).json({
-            error: "name must be unique",
-        });
-    }
+    // IGNORE DUPLICATE CHECKING FOR NOW
+    // if (persons.some((person) => person.name === body.name)) {
+    //     return response.status(400).json({
+    //         error: "name must be unique",
+    //     });
+    // }
 
-    const person = {
-        id: Math.trunc(Math.random() * 999999999999999),
+    const person = new People({
         name: body.name,
         number: body.number,
-    };
+    });
 
-    persons = persons.concat(person);
-
-    response.json(person);
+    person.save().then((savedPerson) => {
+        response.json(savedPerson);
+    });
 });
 
 const PORT = process.env.PORT;
