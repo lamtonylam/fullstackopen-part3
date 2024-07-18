@@ -87,11 +87,13 @@ app.get("/api/persons/:id", (request, response) => {
 });
 
 // delete a person based on id
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/persons/:id", (request, response, next) => {
     const id = request.params.id;
-    persons = persons.filter((person) => person.id !== id);
-
-    response.status(204).end();
+    People.findByIdAndDelete(id)
+        .then((result) => {
+            response.status(204).end();
+        })
+        .catch((error) => next(error));
 });
 
 // post a person into the app
