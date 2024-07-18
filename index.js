@@ -1,15 +1,17 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const app = express();
-const cors = require("cors")
+const cors = require("cors");
+const People = require("./models/people");
 
 app.use(express.json());
 
 // cross origin check
-app.use(cors())
+app.use(cors());
 
 // express use frontend in dist folder
-app.use(express.static("dist"))
+app.use(express.static("dist"));
 
 // return POST data in logging
 morgan.token("type", function (request, response) {
@@ -52,30 +54,36 @@ app.get("/", (request, response) => {
 
 // returns all person
 app.get("/api/persons", (request, response) => {
-    response.json(persons);
+    People.find({}).then((persons) => {
+        response.json(persons);
+    });
 });
 
 // returns how many persons are in the app
 app.get("/info", (request, response) => {
-    const people_amount = persons.length;
-    const date = new Date();
-    response.send(`
-        <p>Phone book has info for ${people_amount} people <p/>
-        <p>${date}</p>
-        `);
+    People.find({}).then((persons) => {
+        const people_amount = persons.length;
+        const date = new Date();
+        response.send(`
+            <p>Phone book has info for ${people_amount} people <p/>
+            <p>${date}</p>
+            `);
+    });
 });
 
 // return a single person based on id
 app.get("/api/persons/:id", (request, response) => {
     const id = request.params.id;
-    const person = persons.find((person) => person.id === id);
+    People.find({}).then((persons) => {
+        const person = persons.find((person) => person.id === id);
 
-    // checking if there is a person
-    if (person) {
-        response.json(person);
-    } else {
-        response.status(404).end();
-    }
+        // checking if there is a person
+        if (person) {
+            response.json(person);
+        } else {
+            response.status(404).end();
+        }
+    });
 });
 
 // delete a person based on id
@@ -118,7 +126,7 @@ app.post("/api/persons", (request, response) => {
     response.json(person);
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
