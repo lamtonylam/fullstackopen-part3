@@ -18,9 +18,17 @@ mongoose
 const personSchema = new mongoose.Schema({
     name: {
         type: String,
-        minlength: 3
+        minlength: 3,
     },
-    number: String,
+    number: {
+        type: String,
+        minlength: 8,
+        validate: {
+            validator: function (v) {
+                return /\d{2,3}-\d{7,8}/.test(v);
+            },
+        },
+    },
 });
 
 // cleaning up the schema to correct mongodb id
